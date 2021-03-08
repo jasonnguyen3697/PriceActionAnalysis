@@ -37,8 +37,7 @@ def candleType(dataset):
 def HigherHighLowerLow(dataset):
     # calculate whether candle high extended higher than previous high. 1 - yes and 0 - no
     # calculate whether candle low extended lower than previous low. 1 - yes and 0 - no
-    # calculate magnitude of excess extension equals to current high - previous high or current low - previous low
-    
+    # calculate magnitude of excess extension equals to current high - previous high or current low - previous low    
     
     if not ("HigherHigh" in dataset.columns) and not ("LowerLow" in dataset.columns) and not ("ExcessHigh" in dataset.columns) and not ("ExcessLow" in dataset.columns):
         # obtain High and Low columns
