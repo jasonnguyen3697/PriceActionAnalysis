@@ -34,7 +34,33 @@ def candleType(dataset):
         
         return
     
-def 
+def HigherHighLowerLow(dataset):
+    # calculate whether candle high extended higher than previous high. 1 - yes and 0 - no
+    # calculate whether candle low extended lower than previous low. 1 - yes and 0 - no
+    # calculate magnitude of excess extension equals to current high - previous high or current low - previous low
+    
+    
+    if not ("HigherHigh" in dataset.columns) and not ("LowerLow" in dataset.columns) and not ("ExcessHigh" in dataset.columns) and not ("ExcessLow" in dataset.columns):
+        # obtain High and Low columns
+        datasetNext = dataset[["High", "Low"]].copy()
+        # decrement index by 1
+        datasetNext.index = range(1, len(datasetNext) + 1)
+        # join with original dataset using left join
+        dataset.join(datasetNext, how="left", inplace=True, rsuffix="_prev")
+        
+        # generate mask for higher high and lower low
+        higherHigh_mask = dataset["High"] > dataset["High_prev"]
+        lowerLow_mask = dataset["Low"] < dataset["Low_prev"]
+        
+        # append columns
+        dataset.loc[higherHigh_mask, "HigherHigh"] = 1
+        dataset.loc[lowerLow_mask, "LowerLow"] = 1
+        dataset.loc[higherHigh_mask, "ExcessHigh"] = dataset["High"] - dataset["High_prev"] # absolute difference
+        dataset.loc[lowerLow_mask, "ExcessLow"] = - dataset["Low"] + dataset["Low_prev"] # absolute difference
+    else:
+        print("HigherHigh and/or ExcessHigh and/or LowerLow and/or ExcessLow already exist in dataset")
+        
+    return
 
 def main(datasetPath):
     # read dataset
@@ -43,7 +69,8 @@ def main(datasetPath):
     # generate candle type feature
     candleType(dataset)
     
-    # 
+    # generate higher high and lower low flags and their excess highs and lows respectively
+    HigherHighLowerLow(dataset)
     return
 
 # create argument parser
