@@ -58,10 +58,22 @@ def HigherHighLowerLow(dataset):
         dataset.loc[~lowerLow_mask, "LowerLow"] = 0
         dataset.loc[higherHigh_mask, "ExcessHigh"] = dataset["High"] - dataset["High_prev"] # absolute difference
         dataset.loc[lowerLow_mask, "ExcessLow"] = - dataset["Low"] + dataset["Low_prev"] # absolute difference
+        
+        # drop _prev columns
+        dataset.drop(labels["High_prev", "Low_prev"], axis="columns", inplace=True)
     else:
         print("HigherHigh and/or ExcessHigh and/or LowerLow and/or ExcessLow already exist in dataset")
         
     return
+
+def PivotPoints(dataset):
+    # generate pivot point flag
+    # definition of pivot points is:
+    # high is higher than previous high and next high, low is higher than previous low and next low -> peak 1
+    # low is lower than previous low and next low, high is lower than previous high and next high -> trough 0
+
+    # create pivot point array where 0 means not a pivot point and 1 means is a pivot point
+    
 
 def main(datasetPath):
     # read dataset
