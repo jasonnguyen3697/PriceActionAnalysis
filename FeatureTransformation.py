@@ -41,11 +41,11 @@ def HigherHighLowerLow(dataset):
     
     if not ("HigherHigh" in dataset.columns) and not ("LowerLow" in dataset.columns) and not ("ExcessHigh" in dataset.columns) and not ("ExcessLow" in dataset.columns):
         # obtain High and Low columns
-        datasetNext = dataset[["High", "Low"]].copy()
+        datasetPrev = dataset[["High", "Low"]].copy()
         # decrement index by 1
-        datasetNext.index = range(1, len(datasetNext) + 1)
+        datasetPrev.index = range(1, len(datasetPrev) + 1)
         # join with original dataset using left join
-        dataset.join(datasetNext, how="left", inplace=True, rsuffix="_prev")
+        dataset.join(datasetPrev, how="left", inplace=True, rsuffix="_prev")
         
         # generate mask for higher high and lower low
         higherHigh_mask = dataset["High"] > dataset["High_prev"]
@@ -60,7 +60,7 @@ def HigherHighLowerLow(dataset):
         dataset.loc[lowerLow_mask, "ExcessLow"] = - dataset["Low"] + dataset["Low_prev"] # absolute difference
         
         # drop _prev columns
-        dataset.drop(labels["High_prev", "Low_prev"], axis="columns", inplace=True)
+        dataset.drop(labels=["High_prev", "Low_prev"], axis="columns", inplace=True)
     else:
         print("HigherHigh and/or ExcessHigh and/or LowerLow and/or ExcessLow already exist in dataset")
         
@@ -73,7 +73,9 @@ def PivotPoints(dataset):
     # low is lower than previous low and next low, high is lower than previous high and next high -> trough 0
 
     # create pivot point array where 0 means not a pivot point and 1 means is a pivot point
-    
+    if not ("Pivot" in dataset.columns) and not ("PivotType" in dataset.columns):
+        # obtain next candle's higher high and lower low properties
+        dataset
 
 def main(datasetPath):
     # read dataset
