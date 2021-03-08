@@ -14,7 +14,6 @@ import os
 import numpy as np
 import argparse
 import sys
-import re
 
 def candleType(dataset):
     # Generate candle type flag
