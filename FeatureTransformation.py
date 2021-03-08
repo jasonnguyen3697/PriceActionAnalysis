@@ -42,7 +42,7 @@ def HigherHighLowerLow(dataset):
     if not ("HigherHigh" in dataset.columns) and not ("LowerLow" in dataset.columns) and not ("ExcessHigh" in dataset.columns) and not ("ExcessLow" in dataset.columns):
         # obtain High and Low columns
         datasetPrev = dataset[["High", "Low"]].copy()
-        # decrement index by 1
+        # increment index by 1
         datasetPrev.index = range(1, len(datasetPrev) + 1)
         # join with original dataset using left join
         dataset.join(datasetPrev, how="left", inplace=True, rsuffix="_prev")
@@ -75,7 +75,28 @@ def PivotPoints(dataset):
     # create pivot point array where 0 means not a pivot point and 1 means is a pivot point
     if not ("Pivot" in dataset.columns) and not ("PivotType" in dataset.columns):
         # obtain next candle's higher high and lower low properties
-        dataset
+        datasetNext = dataset[["HigherHigh", "LowerLow"]].copy()
+        # decrement index by 1
+        datasetNext.index = range(-1, len(datasetNext) - 1)
+        # join with original dataset using left join
+        dataset.join(datasetNext, how="left", inplace=True, rsuffix="_next")
+        
+        # generate mask for pivots
+        peak_mask = (dataset["HigherHigh"]==1) & (dataset["LowerLow_next"]==1) & (dataset["HigherHigh_next"]==0)
+        trough_mask = (dataset["LowerLow"]==1) & (dataset["HigherHigh_next"]==1) & (dataset["LowerLow_next"]==0)
+        
+        # append columns
+        dataset.loc[peak_mask|trough_mask, "Pivot"] = 1
+        dataset.loc[(~peak_mask)&(~trough_mask), "Pivot"] = 0
+        dataset.loc[peak_mask, "PivotType"] = 1
+        dataset.loc[trough_mask, "PivotType"] = 0
+        
+        # drop _next columns
+        dataset.drop(labels=["HigherHigh_next", "LowerLow_next"], axis="columns", inplace=True)
+    else:
+        print("Pivot and/or PivotType columns already exist in dataset")
+        
+    return
 
 def main(datasetPath):
     # read dataset
@@ -86,6 +107,9 @@ def main(datasetPath):
     
     # generate higher high and lower low flags and their excess highs and lows respectively
     HigherHighLowerLow(dataset)
+    
+    # generate pivot point flags
+    PivotPoints(dataset)
     return
 
 # create argument parser
