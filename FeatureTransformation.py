@@ -23,19 +23,18 @@ def candleType(dataset):
         print("Column \"CandleType\" already exists in dataset")
         return
     except KeyError:
-        candleType = []
-        for i in range(len(dataset)):
-            print(str(i+1) + "/" + str(len(dataset)), end="\r")
-            if float(dataset.iloc[i]["Close"]) > float(dataset.iloc[i]["Open"]):
-                candleType.append(1)
-            elif float(dataset.iloc[i]["Close"]) < float(dataset.iloc[i]["Open"]):
-                candleType.append(-1)
-            else:
-                candleType.append(0)
+        # generate masks to calculate feature                
+        higher_mask = dataset["Close"] > dataset["Open"]
+        lower_mask = dataset["Close"] < dataset["Open"]
+        doji_mask = dataset["Close"] == dataset["Open"]
         
-        # append column to dataset
-        dataset.insert(len(dataset.columns), "CandleType", candleType)
+        dataset.loc[higher_mask, "CandleType"] = 1
+        dataset.loc[lower_mask, "CandleType"] = -1
+        dataset.loc[doji_mask, "CandleType"] = 0
+        
         return
+    
+def 
 
 def main(datasetPath):
     # read dataset
@@ -44,7 +43,7 @@ def main(datasetPath):
     # generate candle type feature
     candleType(dataset)
     
-    
+    # 
     return
 
 # create argument parser
