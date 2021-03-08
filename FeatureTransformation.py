@@ -53,7 +53,9 @@ def HigherHighLowerLow(dataset):
         
         # append columns
         dataset.loc[higherHigh_mask, "HigherHigh"] = 1
+        dataset.loc[~higherHigh_mask, "HigherHigh"] = 0
         dataset.loc[lowerLow_mask, "LowerLow"] = 1
+        dataset.loc[~lowerLow_mask, "LowerLow"] = 1
         dataset.loc[higherHigh_mask, "ExcessHigh"] = dataset["High"] - dataset["High_prev"] # absolute difference
         dataset.loc[lowerLow_mask, "ExcessLow"] = - dataset["Low"] + dataset["Low_prev"] # absolute difference
     else:
