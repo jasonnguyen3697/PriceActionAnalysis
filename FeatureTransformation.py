@@ -14,6 +14,7 @@ import os
 import numpy as np
 import argparse
 import sys
+import re
 
 def candleType(dataset):
     # Generate candle type flag
@@ -99,6 +100,8 @@ def PivotPoints(dataset):
     return
 
 def main(datasetPath):
+    datasetOutputFolder, datasetName = os.path.split(datasetPath)
+    
     # read dataset
     dataset = pd.read_csv(datasetPath, low_memory=False)
     
@@ -110,6 +113,11 @@ def main(datasetPath):
     
     # generate pivot point flags
     PivotPoints(dataset)
+    
+    # output transformed dataset to same folder as input dataset
+    datasetOutputPath = os.path.join(datasetOutputFolder, "_transformed.".join(datasetName.split(".")))
+    dataset.to_csv(datasetOutputPath, index=False)
+    
     return
 
 # create argument parser
